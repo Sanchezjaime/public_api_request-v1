@@ -2,12 +2,8 @@
 const gallery = document.getElementById('gallery');
 const body = document.querySelector('body');
 
-const closeBtn = document.getElementById('modal-close-btn');
-let employees = [];
 
-/**
-*fetch functions
-**/
+let employees = [];
 const url = "https://randomuser.me/api/?results=12";
 
 /**
@@ -22,19 +18,16 @@ fetch(url)
   .catch(error => console.log("Something went wrong", error))
 
 
-
-
-
 /**
-*function to display random users
+*function to display random users and set an addEventListener to each card
 **/
 function createCards(data) {
   for (let i = 0; i < employees.length; i++) {
-
+//creates card div
     const card = document.createElement("div");
     card.setAttribute("class", "card");
     gallery.appendChild(card);
-
+//appends children to card div with data from json
     const cardContainer = document.createElement("div");
     cardContainer.setAttribute("class", "card-img-container");
     card.appendChild(cardContainer);
@@ -54,54 +47,51 @@ function createCards(data) {
     <p class="card-text">${employees[i].email}</p>
     <p class="card-text cap">${employees[i].location.city}, ${employees[i].location.state}</p>
     `
+//event listener to create modal for selected employee
+    card.addEventListener('click', (e) => {
+      let target = employees[i];
+      //console.log(target);
+      createModal(target);
+    })
   }
-  
-  const cards = document.querySelectorAll('card');
-  cards.addEventListener("click", (e) => {
-    let target = event.target;
-    console.log(target);
-    //createModal(target);
-  })
-
 }
-
-/**
-*event listener to open modal
-**/
-
-
-
 
 
 /**
 *creates modal and displays employees info
 **/
 function createModal(data) {
-
-
+//variable to set json date data to month/date/year format string
+  let birthday = new Date(data.dob.date).toLocaleDateString();
+  //console.log(birthday);
+//creates modal div and appends children elements
   const modalContainer = document.createElement("div");
   modalContainer.setAttribute("class", "modal-container");
   gallery.after(modalContainer);
-
 
   const modal = document.createElement("div");
   modal.setAttribute("class", "modal");
   modal.innerHTML = '<button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>"';
   modalContainer.appendChild(modal);
-
+//set json data for selected employee to modal info
   const modalInfo = document.createElement("div");
   modalInfo.setAttribute("class", "modal-info-container");
   modal.appendChild(modalInfo);
   modalInfo.innerHTML = `
-  <img class="modal-img" src="https://placehold.it/125x125" alt="profile picture">
-  <h3 id="name" class="modal-name cap">${employees[i].name.first} ${employees[i].name.last}</h3>
-  <p class="modal-text">email</p>
-  <p class="modal-text cap">city</p>
+  <img class="modal-img" src=${data.picture.large} alt="profile picture">
+  <h3 id="name" class="modal-name cap">${data.name.first} ${data.name.last}</h3>
+  <p class="modal-text">${data.email}</p>
+  <p class="modal-text cap">${data.location.city}</p>
   <hr>
-  <p class="modal-text">(555) 555-5555</p>
-  <p class="modal-text">123 Portland Ave., Portland, OR 97204</p>
-  <p class="modal-text">Birthday: 10/21/2015</p>
+  <p class="modal-text">${data.cell}</p>
+  <p class="modal-text">${data.location.street.number} ${data.location.street.name}, ${data.location.city}, ${data.location.state} ${data.location.postcode}</p>
+  <p class="modal-text">Birthday: ${birthday}</p>
   `
-  const modalDisplay = document.querySelector("modalContainer");
+//event listener to close modal and remove modal element from html
+  const closeBtn = document.getElementById('modal-close-btn');
+  const modalDisplay = document.getElementsByClassName("modalContainer");
+  closeBtn.addEventListener('click', (e) => {
+    body.removeChild(modalContainer);
+  })
 
 }
