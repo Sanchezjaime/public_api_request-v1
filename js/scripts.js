@@ -1,8 +1,6 @@
 //global variables...
 const gallery = document.getElementById('gallery');
 const body = document.querySelector('body');
-
-
 let employees = [];
 const url = "https://randomuser.me/api/?results=12";
 
